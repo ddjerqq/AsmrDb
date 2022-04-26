@@ -3,9 +3,9 @@ from models.item import Item
 
 
 class ItemRepository:
-    def __init__(self, connection: aiosqlite.Connection, cursor: aiosqlite.Cursor):
-        self._connection = connection
-        self._cursor     = cursor
+    def __init__(self, conn: aiosqlite.Connection, curs: aiosqlite.Cursor):
+        self._connection = conn
+        self._cursor     = curs
 
     async def save_changes(self):
         await self._connection.commit()

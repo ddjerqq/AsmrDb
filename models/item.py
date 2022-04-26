@@ -48,8 +48,7 @@ class Item(object):
 
     @classmethod
     def from_db(cls, data: tuple | sqlite3.Row) -> Item:
-        return cls(data[0], data[1], data[2], data[3])
-
+        return cls(*data)
 
     # dunder methods
     def __hash__(self):

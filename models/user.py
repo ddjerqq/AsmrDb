@@ -1,13 +1,22 @@
 from __future__ import annotations
 import sqlite3
 from models.item import Item
+from models.pet import Pet
 
 
 class User(object):
-    def __init__(self, id: int, username: str, items: list[Item], experience: int, wallet: int, bank: int):
+    def __init__(self,
+                 id: int,
+                 username: str,
+                 items: list[Item],
+                 pets:  list[Pet],
+                 experience: int,
+                 wallet: int,
+                 bank: int) -> None:
         self.__id       = id
         self.username   = username
         self.items      = items
+        self.pets       = pets
         self.experience = experience
         self.wallet     = wallet
         self.bank       = bank
@@ -15,7 +24,7 @@ class User(object):
     @classmethod
     def new(cls, id: int, username: str) -> User:
         """create new users with this"""
-        return cls(id, username, [], 0, 0, 0)
+        return cls(id, username, [], [], 0, 0, 0)
 
     # getters
     @property
@@ -29,9 +38,15 @@ class User(object):
 
     @classmethod
     def from_db(cls, data: tuple | sqlite3.Row) -> User:
-        return cls(data[0], data[1], [], data[2], data[3], data[4])
+        return cls(*data)
 
     # dunder methods
+    def __hash__(self):
+        return hash(self.to_db)
+
+    def __eq__(self, other: User):
+        return isinstance(other, User) and self.__id == other.__id
+
     def __str__(self):
         return f"({self.__id}) {self.username}"
 

@@ -4,7 +4,6 @@ import os
 import asyncio
 import aiosqlite
 
-from services.item_service import ItemService
 from services.user_service import UserService
 
 
