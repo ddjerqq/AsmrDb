@@ -13,7 +13,6 @@ class UserService:
         self._item_repository = ItemRepository(conn, curs)
         self._pet_repository  = PetRepository(conn, curs)
 
-
     async def get_all(self):
         items = await self._item_repository.get_all()
         pets  = await self._pet_repository.get_all()
@@ -24,7 +23,6 @@ class UserService:
             user.pets  = list(filter(lambda p: p.owner_id == user.id, pets))
 
         return users
-
 
     async def get(self, id: int) -> User:
         items = await self._item_repository.get_all()
@@ -53,27 +51,33 @@ class UserService:
         await self._user_repository.save_changes()
 
     async def update(self, entity: User) -> None:
-        await self._user_repository.update(entity)
-        items = await self._item_repository.get_all()
-        pets  = await self._pet_repository.get_all()
-        items = filter(lambda i: i.owner_id == entity.id, items)
-        pets  = filter(lambda p: p.owner_id == entity.id, pets)
+        db_items  = await self._item_repository.get_all()
+        db_items  = list(filter(lambda i: i.owner_id == entity.id, db_items))
+        new_items = list(set(entity.items) - set(db_items))
+        del_items = list(filter(lambda i: i not in entity.items, db_items))
 
-        new_items = set(entity.items) - set(items)
-        new_pets  = set(entity.pets)  - set(pets)
-
-        for item in items:
+        for item in (db_items + new_items):
             if item in new_items:
                 await self._item_repository.add(item)
+            elif item in del_items:
+                await self._item_repository.delete(item)
             else:
                 await self._item_repository.update(item)
 
-        for pet in pets:
+        db_pets  = await self._pet_repository.get_all()
+        db_pets  = list(filter(lambda p: p.owner_id == entity.id, db_pets))
+        new_pets = list(set(entity.pets)  - set(db_pets))
+        del_pets = list(filter(lambda p: p not in entity.pets, db_pets))
+
+        for pet in (db_pets + new_pets):
             if pet in new_pets:
                 await self._pet_repository.add(pet)
+            elif pet in del_pets:
+                await self._pet_repository.delete(pet)
             else:
                 await self._pet_repository.update(pet)
 
+        await self._user_repository.update(entity)
         await self._user_repository.save_changes()
         await self._item_repository.save_changes()
         await self._pet_repository.save_changes()

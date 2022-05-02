@@ -17,7 +17,6 @@ class AsmrDb(object):
 
     then you can access items and users with
     >>> user  = await db.users.get(snowflake)
-    >>> items = await db.items.get_all()
     """
     _DB_PATH = os.path.dirname(os.path.realpath(__file__)) + "/database.db"
 
@@ -25,7 +24,6 @@ class AsmrDb(object):
         self._connection  = conn
         self._cursor      = curs
         self.users = UserService(conn, curs)
-        self.items = ItemService(conn, curs)
 
     @classmethod
     async def new(cls):

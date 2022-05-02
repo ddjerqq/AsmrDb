@@ -8,15 +8,13 @@ class User(object):
     def __init__(self,
                  id: int,
                  username: str,
-                 items: list[Item],
-                 pets:  list[Pet],
                  experience: int,
                  wallet: int,
                  bank: int) -> None:
         self.__id       = id
         self.username   = username
-        self.items      = items
-        self.pets       = pets
+        self.items      = []  # type: list[Item]
+        self.pets       = []  # type: list[Pet]
         self.experience = experience
         self.wallet     = wallet
         self.bank       = bank
@@ -24,7 +22,7 @@ class User(object):
     @classmethod
     def new(cls, id: int, username: str) -> User:
         """create new users with this"""
-        return cls(id, username, [], [], 0, 0, 0)
+        return cls(id, username, 0, 0, 0)
 
     # getters
     @property
